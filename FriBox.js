@@ -8,6 +8,7 @@ var http = require('http');
 var fs = require('fs-extra');
 var util = require('util');
 var path = require('path');
+var express = require("express");
 
 var dataDir = "./data/";
 
@@ -22,10 +23,18 @@ var streznik = http.createServer(function(zahteva, odgovor) {
        posredujStaticnoVsebino(odgovor, dataDir + zahteva.url.replace("/prenesi", ""), "application/octet-stream");
    } else if (zahteva.url == "/nalozi") {
        naloziDatoteko(zahteva, odgovor);
-   } else {
+   }else if (zahteva.url.startsWith("/poglej")) {
+       posredujStaticnoVsebino(odgovor, dataDir + zahteva.url.replace("/poglej", ""), "");
+   }  
+   else {
        posredujStaticnoVsebino(odgovor, './public' + zahteva.url, "");
    }
 });
+
+streznik.listen(process.env.PORT,function(){
+    console.log("Streznik zagnan");
+});
+
 
 function posredujOsnovnoStran(odgovor) {
     posredujStaticnoVsebino(odgovor, './public/fribox.html', "");
